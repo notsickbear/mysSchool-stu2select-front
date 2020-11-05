@@ -1,8 +1,9 @@
-import React, { Component } from 'react'
+import React, {Component} from 'react'
 import TableAsset from '../assets/TableAsset'
 import TutorApi from '../api/TutorApi'
-import { ToastContainer} from 'react-toastify';
+import {ToastContainer} from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+
 export class TutorMyStudentComp extends Component {
     constructor(props) {
         super(props)
@@ -20,20 +21,23 @@ export class TutorMyStudentComp extends Component {
                     <th>学号</th>
                     <th>姓名</th>
                     <th>专业</th>
-                    <th colSpan="3">研究方向</th>
+                    <th colSpan="3">志愿方向</th>
                 </tr>
             )],
             'tbody': [(
-                <tr key={-1}><td/></tr>
+                <tr key={-1}>
+                    <td/>
+                </tr>
             )],
             'totalPages': 1
         }
     }
+
     // 使用箭头函数定义函数时可以省略 function 关键字
     getTableData = (page) => {
         // api的async和await使得then能获得res
         TutorApi.getAllStudentByTutorIdAndPeriod(this.props.userId, this.state.period, page).then((res) => {
-            var tbody = res.content.map((student) => {
+            const tbody = res.content.map((student) => {
                 return (
                     <tr key={student.id}>
                         <td>{student.id}</td>
@@ -45,13 +49,15 @@ export class TutorMyStudentComp extends Component {
                         <td>{student.area3.name}</td>
                     </tr>
                 )
-            })
-            this.setState({ tbody: tbody, totalPage: res.totalPages })
+            });
+            this.setState({tbody: tbody, totalPage: res.totalPages})
         })
     }
+
     componentDidMount() {
         this.getTableData(0)
     }
+
     render() {
         return (
             <div>
@@ -61,8 +67,8 @@ export class TutorMyStudentComp extends Component {
                     thead={this.state.thead}
                     tbody={this.state.tbody}
                     totalPages={this.state.totalPage}
-                    getTableDate={this.getTableData} />
-                <ToastContainer />
+                    getTableDate={this.getTableData}/>
+                <ToastContainer/>
             </div>
         )
     }

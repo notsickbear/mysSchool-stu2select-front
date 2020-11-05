@@ -1,10 +1,12 @@
 import React, {Component} from 'react'
 import StaticTableAsset from '../assets/StaticTableAsset'
 import TableAsset from '../assets/TableAsset'
-import TutorApi from '../api/TutorApi'
+import StudentApi from '../api/StudentApi'
 import SelectStateApi from "../api/SelectStateApi";
 import {toast, ToastContainer} from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import {HashRouter as Router, Link, Route, Switch} from 'react-router-dom'
+import StudentMyTutorComp from "./StudentMyTutorComp";
 
 export class Comp extends Component {
     constructor(props) {
@@ -62,10 +64,10 @@ export class Comp extends Component {
                     )]
                 })
             } else {
-                toast("学生已滿，如果需要增添新的学生，請移除一些舊的且没有保存的学生")
+                toast("导师已滿，如果需要增添新的导师，請移除一些舊的且没有保存的导师")
             }
         } else {
-            toast("学生不能重复添加")
+            toast("导师不能重复添加")
         }
     }
     // 从已选择的内容中移除，点击保存以前数据仅保存在当前页面
@@ -76,22 +78,32 @@ export class Comp extends Component {
     }
     // 初始化已选择的内容
     getStaticData = () => {
-        TutorApi.getAllStudentByTutorIdAndPeriod(this.props.userId, this.state.period).then((res) => {
-            let thold = res.content.map((student) => {
-                return (
-                    <tr key={student.id} itemID={student.id}>
-                        <td>{student.id}</td>
-                        <td>{student.no}</td>
-                        <td>{student.name}</td>
-                        <td>{student.major.name}</td>
-                        <td>{student.area1.name}</td>
-                        <td>{student.area2.name}</td>
-                        <td>{student.area3.name}</td>
-                        <td>已保存，无法移除</td>
-                    </tr>
-                )
-            })
-            this.setState({thold: thold})
+        SelectStateApi.getSelectStateByStuIdAndPeriod(this.props.userId, this.state.period).then((res) => {
+            let thold = {}
+            if (res.selectState === 1) {
+                thold = <tr><td><Router><Switch>
+                    <Route path="/student/myTutor"><StudentMyTutorComp userId={this.props.userId}/></Route>
+                    <Route path="/student"><div className="link">
+                        <Link to="/student/myTutor">你已经被导师选中了，快来查看你的导师</Link>
+                    </div></Route></Switch></Router></td></tr>
+            } else {
+                let areas = [res.tutor1, res.tutor2, res.tutor3]
+                thold = areas.map((area) => {
+                    return (
+                        <tr key={area.id} itemID={area.id}>
+                            <td>{area.id}</td>
+                            <td>{area.no}</td>
+                            <td>{area.name}</td>
+                            <td>{area.major.name}</td>
+                            <td>{area.area1.name}</td>
+                            <td>{area.area2.name}</td>
+                            <td>{area.area3.name}</td>
+                            <td className="link" onClick={() => this.dropFromStatic(area.id)}>移除</td>
+                        </tr>
+                    )
+                })
+            }
+            this.setState({thold: thold, tholdHead: (<br/>)})
         })
     }
     //  保存已选择的内容
@@ -116,18 +128,18 @@ export class Comp extends Component {
     }
     // es6 使用箭头函数定义函数时可以省略 function 关键字
     getTableData = (page) => {
-        TutorApi.getAllEnableStudent(this.props.userId, this.state.period, page).then((res) => {
-            const tbody = res.content.map((student) => {
+        StudentApi.getAllEnableTutor(this.props.userId, page).then((res) => {
+            const tbody = res.content.map((item) => {
                 return (
-                    <tr key={student.id}>
-                        <td>{student.id}</td>
-                        <td>{student.no}</td>
-                        <td>{student.name}</td>
-                        <td>{student.major.name}</td>
-                        <td>{student.area1.name}</td>
-                        <td>{student.area2.name}</td>
-                        <td>{student.area3.name}</td>
-                        <td className="link" onClick={() => this.addToStatic(student)}>添加</td>
+                    <tr key={item.id}>
+                        <td>{item.id}</td>
+                        <td>{item.no}</td>
+                        <td>{item.name}</td>
+                        <td>{item.major.name}</td>
+                        <td>{item.area1.name}</td>
+                        <td>{item.area2.name}</td>
+                        <td>{item.area3.name}</td>
+                        <td className="link" onClick={() => this.addToStatic(item)}>添加</td>
                     </tr>
                 )
             });

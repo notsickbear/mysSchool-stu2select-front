@@ -1,47 +1,43 @@
 import React, {Component} from 'react'
 import {HashRouter as Router, Link, Route, Switch} from 'react-router-dom'
 import 'react-toastify/dist/ReactToastify.css';
-import TutorSelectStudentComp from "../compone/TutorSelectStudentComp"
-import TutorMyStudentComp from "../compone/TutorMyStudentComp";
-import TutorResearchAreaComp from "../compone/TutorResearchAreaComp"
+import StudentSelectTutorComp from "../compone/StudentSelectTutorComp"
+import StudentMyTutorComp from "../compone/StudentMyTutorComp";
+import StudentResearchAreaComp from "../compone/StudentResearchAreaComp"
 
 
-export class TutorPage extends Component {
+export class StudentPage extends Component {
     // TODO:select 的备选项查询 /*useId={this.props.useId}*/
     render() {
         return (
             <div>
                 <Router>
                     <Switch>
-                        <Route path="/tutor/myStudent">
-                            <TutorMyStudentComp
+                        <Route path="/student/myTutor">
+                            <StudentMyTutorComp
                                 userId={this.props.userId}/>
                         </Route>
-                        <Route path="/tutor/researchArea">
-                            <TutorResearchAreaComp
+                        <Route path="/student/researchArea">
+                            <StudentResearchAreaComp
                                 userId={this.props.userId}/>
                         </Route>
-                        <Route path="/tutor/select">
-                            <TutorSelectStudentComp
+                        <Route path="/student/select">
+                            <StudentSelectTutorComp
                                 userId={this.props.userId}/>
                         </Route>
-                        <Route path="/tutor">
+                        <Route path="/student">
                             <div className="link">
-                                <Link to="/tutor/select">
+                                <Link to="/student/select">
                                     <h1>select</h1>
                                 </Link>
                             </div>
-                        </Route>
-                        <Route path="/tutor">
                             <div className="link">
-                                <Link to="/tutor/researchArea">
+                                <Link to="/student/researchArea">
                                     <h1>researchArea</h1>
                                 </Link>
                             </div>
-                        </Route>
-                        <Route path="/tutor">
                             <div className="link">
-                                <Link to="/tutor/myStudent">
+                                <Link to="/student/myTutor">
                                     <h1>myStudent</h1>
                                 </Link>
                             </div>
@@ -53,4 +49,4 @@ export class TutorPage extends Component {
     }
 }
 
-export default TutorPage
+export default StudentPage

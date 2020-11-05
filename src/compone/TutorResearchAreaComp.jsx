@@ -1,10 +1,11 @@
-import React, { Component } from 'react'
+import React, {Component} from 'react'
 import StaticTableAsset from '../assets/StaticTableAsset'
 import TableAsset from '../assets/TableAsset'
 import TutorApi from '../api/TutorApi'
 import ResearchAreaApi from '../api/ResearchAreaApi'
-import { ToastContainer, toast } from 'react-toastify';
+import {toast, ToastContainer} from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+
 export class ResearchAreaComp extends Component {
     constructor(props) {
         super(props)
@@ -18,21 +19,29 @@ export class ResearchAreaComp extends Component {
                 </tr>
             )],
             'tbody': [(
-                <tr key={-1}><td/></tr>
+                <tr key={-1}>
+                    <td/>
+                </tr>
             )],
             'totalPage': 1,
             'thold': [(
-                <tr key={-1}><td/></tr>
+                <tr key={-1}>
+                    <td/>
+                </tr>
             )],
             'tholdHead': (
-                <tr><th colSpan={4} className="link" onClick={()=>this.saveStaticData()}>保存研究志愿</th></tr>
-            )
+                <tr>
+                    <th colSpan={4} className="link" onClick={() => this.saveStaticData()}>保存研究志愿</th>
+                </tr>
+            ),
+            'numLimit': 3
         }
     }
+
     // 添加到已选择的内容（thold），点击保存以前数据仅保存在当前页面
     addToStatic = (id, no, name) => {
-        if (this.state.thold.findIndex(item => item.props.itemID === id) === -1){
-            if (this.state.thold.length < 3) {
+        if (this.state.thold.findIndex(item => item.props.itemID === id) === -1) {
+            if (this.state.thold.length < this.state.numLimit) {
                 this.setState({
                     thold: [...this.state.thold, (
                         <tr key={id} itemID={id}>
@@ -54,23 +63,23 @@ export class ResearchAreaComp extends Component {
     dropFromStatic = (id) => {
         let data = this.state.thold
         data.splice(data.findIndex(item => item.props.itemID === id), 1)
-        this.setState({ thold: data })
+        this.setState({thold: data})
     }
     // 初始化已选择的内容
     getStaticData = () => {
         TutorApi.getTutorById(this.props.userId).then((res) => {
             let areas = [res.area1, res.area2, res.area3]
             let thold = areas.map((area) => {
-                    return (
-                        <tr key={area.id} itemID={area.id}>
-                            <td>{area.id}</td>
-                            <td>{area.no}</td>
-                            <td>{area.name}</td>
-                            <td className="link" onClick={() => this.dropFromStatic(area.id)}>移除</td>
-                        </tr>
-                    )
-                })
-            this.setState({ thold: thold })
+                return (
+                    <tr key={area.id} itemID={area.id}>
+                        <td>{area.id}</td>
+                        <td>{area.no}</td>
+                        <td>{area.name}</td>
+                        <td className="link" onClick={() => this.dropFromStatic(area.id)}>移除</td>
+                    </tr>
+                )
+            })
+            this.setState({thold: thold})
             console.log(this.state.thold)
         })
     }
@@ -78,11 +87,14 @@ export class ResearchAreaComp extends Component {
     // 保存已选择的内容
     saveStaticData = () => {
         let data = this.state.thold
-        let param = {"id":parseInt(this.props.userId),
-            "area1":{"id":parseInt(data[0].props.itemID)},
-            "area2":{"id":parseInt(data[1].props.itemID)},
-            "area3":{"id":parseInt(data[2].props.itemID)}}
-        TutorApi.saveTutor(param).then((res)=>{
+        let ids = data.map((item) => {
+            return parseInt(item.props.itemID)
+        })
+        let param = {"id": parseInt(this.props.userId)}
+        if (ids.length > 0) param["area1"] = {"id": ids[0]}
+        if (ids.length > 1) param["area1"] = {"id": ids[1]}
+        if (ids.length > 2) param["area1"] = {"id": ids[2]}
+        TutorApi.saveTutor(param).then((res) => {
             toast(res)
         })
     }
@@ -100,30 +112,33 @@ export class ResearchAreaComp extends Component {
                     </tr>
                 )
             })
-            this.setState({ tbody: tbody, totalPage: res.totalPages })
+            this.setState({tbody: tbody, totalPage: res.totalPages})
         })
     }
+
     componentDidMount() {
         this.getStaticData()
         this.getTableData(0)
     }
+
     render() {
         return (
             <div>
                 <div>
-                <StaticTableAsset
-                    thead={this.state.tholdHead}
-                    tbody={this.state.thold} />
+                    <StaticTableAsset
+                        numLimit={this.state.numLimit}
+                        thead={this.state.tholdHead}
+                        tbody={this.state.thold}/>
                 </div>
                 <br/>
                 <div>
-                <TableAsset
-                    thead={this.state.thead}
-                    tbody={this.state.tbody}
-                    totalPages={this.state.totalPage}
-                    getTableDate={this.getTableData} />
+                    <TableAsset
+                        thead={this.state.thead}
+                        tbody={this.state.tbody}
+                        totalPages={this.state.totalPage}
+                        getTableDate={this.getTableData}/>
                 </div>
-                <ToastContainer />
+                <ToastContainer/>
             </div>
         )
     }

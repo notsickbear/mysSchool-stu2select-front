@@ -1,6 +1,6 @@
 import React, {Component} from 'react'
 import TableAsset from '../assets/TableAsset'
-import TutorApi from '../api/TutorApi'
+import StudentApi from '../api/StudentApi'
 import {ToastContainer} from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -18,7 +18,7 @@ export class TutorMyStudentComp extends Component {
             "thead": [(
                 <tr key={0}>
                     <th>id</th>
-                    <th>学号</th>
+                    <th>职工号</th>
                     <th>姓名</th>
                     <th>专业</th>
                     <th colSpan="3">研究方向</th>
@@ -36,21 +36,20 @@ export class TutorMyStudentComp extends Component {
     // 使用箭头函数定义函数时可以省略 function 关键字
     getTableData = (page) => {
         // api的async和await使得then能获得res
-        TutorApi.getAllStudentByTutorIdAndPeriod(this.props.userId, this.state.period, page).then((res) => {
-            const tbody = res.content.map((student) => {
-                return (
-                    <tr key={student.id}>
-                        <td>{student.id}</td>
-                        <td>{student.no}</td>
-                        <td>{student.name}</td>
-                        <td>{student.major.name}</td>
-                        <td>{student.area1.name}</td>
-                        <td>{student.area2.name}</td>
-                        <td>{student.area3.name}</td>
-                    </tr>
-                )
-            });
-            this.setState({tbody: tbody, totalPage: res.totalPages})
+        StudentApi.getStudentById(this.props.userId).then((res) => {
+            let item = res.tutor
+            const tbody = (
+                <tr key={item.id}>
+                    <td>{item.id}</td>
+                    <td>{item.no}</td>
+                    <td>{item.name}</td>
+                    <td>{item.major.name}</td>
+                    <td>{item.area1.name}</td>
+                    <td>{item.area2.name}</td>
+                    <td>{item.area3.name}</td>
+                </tr>
+            )
+            this.setState({tbody: tbody, totalPage: 1})
         })
     }
 
@@ -61,8 +60,6 @@ export class TutorMyStudentComp extends Component {
     render() {
         return (
             <div>
-                <label>选择要查看的届数</label>
-                {this.state.period_list}
                 <TableAsset
                     thead={this.state.thead}
                     tbody={this.state.tbody}

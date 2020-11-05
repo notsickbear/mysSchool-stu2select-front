@@ -1,25 +1,25 @@
-.link{
+.link {
     color: deepskyblue;
     transform: 0.2s linear;
 }
 
-.link:hover{
+.link:hover {
     color: dodgerblue;
     cursor: pointer;
 }
 
-.table{
-text-align: center;
-border: 1px solid black;
+.table {
+    text-align: center;
+    border: 1px solid black;
 }
 
-.page{
+.page {
     display: inline;
     padding-left: 10px;
     font-size: 2em;
     border: 1px solid black;
 }
 
-.page:hover{
+.page:hover {
     cursor: pointer;
 }

@@ -12,7 +12,16 @@ const getSmartSortStudent = async (id, period, page = 0, size = 10) => {
 const getAllStudentByTutorIdAndPeriod = async (id, period, page = 0, size = 10) => {
     let ret = '';
     // 注意兩邊是tab上方的`而不是單引號
-    await http.get(`api/tutor/${period}/${id}/${page}/${size}`).then((res) => {
+    await http.get(`api/tutor/select/${period}/${id}/${page}/${size}`).then((res) => {
+        ret = res.data
+    })
+    return ret
+};
+
+const getAllEnableStudent = async (id, period, page = 0, size = 10) => {
+    let ret = '';
+    // 注意兩邊是tab上方的`而不是單引號
+    await http.get(`api/tutor/enable/${period}/${id}/${page}/${size}`).then((res) => {
         ret = res.data
     })
     return ret
@@ -42,5 +51,6 @@ export default {
     getSmartSortStudent: getSmartSortStudent,
     getTutorById: getTutorById,
     getAllStudentByTutorIdAndPeriod: getAllStudentByTutorIdAndPeriod,
-    saveTutor: saveTutor
+    saveTutor: saveTutor,
+    getAllEnableStudent: getAllEnableStudent
 }

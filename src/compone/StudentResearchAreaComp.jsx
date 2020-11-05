@@ -1,7 +1,7 @@
 import React, {Component} from 'react'
 import StaticTableAsset from '../assets/StaticTableAsset'
 import TableAsset from '../assets/TableAsset'
-import TutorApi from '../api/TutorApi'
+import StudentApi from '../api/StudentApi'
 import ResearchAreaApi from '../api/ResearchAreaApi'
 import {toast, ToastContainer} from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -67,9 +67,10 @@ export class ResearchAreaComp extends Component {
     }
     // 初始化已选择的内容
     getStaticData = () => {
-        TutorApi.getTutorById(this.props.userId).then((res) => {
+        StudentApi.getStudentById(this.props.userId).then((res) => {
+            let thold
             let areas = [res.area1, res.area2, res.area3]
-            let thold = areas.map((area) => {
+            thold = areas.map((area) => {
                 return (
                     <tr key={area.id} itemID={area.id}>
                         <td>{area.id}</td>
@@ -83,7 +84,6 @@ export class ResearchAreaComp extends Component {
             console.log(this.state.thold)
         })
     }
-    // todo 沒寫具體方法
     // 保存已选择的内容
     saveStaticData = () => {
         let data = this.state.thold
@@ -94,7 +94,7 @@ export class ResearchAreaComp extends Component {
         if (ids.length > 0) param["area1"] = {"id": ids[0]}
         if (ids.length > 1) param["area1"] = {"id": ids[1]}
         if (ids.length > 2) param["area1"] = {"id": ids[2]}
-        TutorApi.saveTutor(param).then((res) => {
+        StudentApi.saveStudent(param).then((res) => {
             toast(res)
         })
     }
