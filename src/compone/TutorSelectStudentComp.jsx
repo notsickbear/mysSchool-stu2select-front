@@ -49,6 +49,10 @@ export class Comp extends Component {
     addToStatic = (item) => {
         if (this.state.thold.findIndex(item => item.props.itemID === item.id) === -1) {
             if (this.state.thold.length < this.state.numLimit) {
+                if (item.major === null) item.major = {"name": ""}
+                if (item.area1 === null) item.area1 = {"name": ""}
+                if (item.area2 === null) item.area2 = {"name": ""}
+                if (item.area3 === null) item.area3 = {"name": ""}
                 this.setState({
                     thold: [...this.state.thold, (
                         <tr key={item.id} itemID={item.id}>
@@ -79,15 +83,24 @@ export class Comp extends Component {
     // 初始化已选择的内容
     getStaticData = () => {
         TutorApi.getAllStudentByTutorIdAndPeriod(this.props.userId, this.state.period).then((res) => {
-            let thold = {}
+            let thold
             if (res.selectState === 1) {
-                thold = <tr><td><Router><Switch>
-                    <Route path="/tutor/myStudent"><StudentMyTutorComp userId={this.props.userId}/></Route>
-                    <Route path="/tutor"><div className="link">
-                        <Link to="/tutor/myStudent">你已经选满学生了，快来查看你的学生</Link>
-                    </div></Route></Switch></Router></td></tr>
+                thold = <tr>
+                    <td><Router><Switch>
+                        <Route path="/tutor/myStudent"><StudentMyTutorComp userId={this.props.userId}/></Route>
+                        <Route path="/tutor">
+                            <div className="link">
+                                <Link to="/tutor/myStudent">你已经选满学生了，快来查看你的学生</Link>
+                            </div>
+                        </Route></Switch></Router></td>
+                </tr>
+                this.setState({tholdHead: (<br/>)})
             } else {
                 thold = res.content.map((student) => {
+                    if (student.major === null) student.major = {"name": ""}
+                    if (student.area1 === null) student.area1 = {"name": ""}
+                    if (student.area2 === null) student.area2 = {"name": ""}
+                    if (student.area3 === null) student.area3 = {"name": ""}
                     return (
                         <tr key={student.id} itemID={student.id}>
                             <td>{student.id}</td>
@@ -103,12 +116,13 @@ export class Comp extends Component {
                 })
 
             }
-            this.setState({thold: thold, tholdHead: (<br/>)})
+            this.setState({thold: thold})
         })
     }
     //  保存已选择的内容
     saveStaticData = () => {
         let data = this.state.thold
+        // eslint-disable-next-line array-callback-return
         data.map((item) => {
             let param = {
                 student: {"id": parseInt(item.props.itemID)},
@@ -122,14 +136,19 @@ export class Comp extends Component {
                 SelectStateApi.saveSelectState(param).then((ret) => {
                     toast(ret)
                     this.getStaticData()
+                    this.getTableData(0)
                 })
             })
         })
     }
     // es6 使用箭头函数定义函数时可以省略 function 关键字
     getTableData = (page) => {
-        TutorApi.getAllEnableStudent(this.props.userId, this.state.period, page).then((res) => {
+        TutorApi.getEnableStudent(this.props.userId, this.state.period, page).then((res) => {
             const tbody = res.content.map((student) => {
+                if (student.major === null) student.major = {"name": ""}
+                if (student.area1 === null) student.area1 = {"name": ""}
+                if (student.area2 === null) student.area2 = {"name": ""}
+                if (student.area3 === null) student.area3 = {"name": ""}
                 return (
                     <tr key={student.id}>
                         <td>{student.id}</td>
@@ -148,8 +167,11 @@ export class Comp extends Component {
     }
 
     componentDidMount() {
-        this.getStaticData()
-        this.getTableData(0)
+        TutorApi.getTutorById(this.props.userId).then((res) => {
+            this.setState({numLimit: res.numLimit})
+            this.getStaticData()
+            this.getTableData(0)
+        })
     }
 
     render() {
@@ -158,7 +180,9 @@ export class Comp extends Component {
                 <div>
                     <StaticTableAsset
                         thead={this.state.tholdHead}
-                        tbody={this.state.thold}/>
+                        tbody={this.state.thold}
+                        numLimit={this.state.numLimit}
+                    />
                 </div>
                 <br/>
                 <div>

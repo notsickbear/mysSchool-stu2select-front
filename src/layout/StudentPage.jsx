@@ -38,7 +38,7 @@ export class StudentPage extends Component {
                             </div>
                             <div className="link">
                                 <Link to="/student/myTutor">
-                                    <h1>myStudent</h1>
+                                    <h1>myTutor</h1>
                                 </Link>
                             </div>
                         </Route>

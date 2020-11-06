@@ -1,9 +1,8 @@
 import React, {Component} from 'react'
 import {HashRouter as Router, Link, Route, Switch} from 'react-router-dom'
 import 'react-toastify/dist/ReactToastify.css';
-import StudentSelectTutorComp from "../compone/StudentSelectTutorComp"
-import StudentMyTutorComp from "../compone/StudentMyTutorComp";
-import StudentResearchAreaComp from "../compone/StudentResearchAreaComp"
+import AssignStudentComp from "../compone/AssignStudentComp"
+import SetTutorNumLimitComp from "../compone/SetTutorNumLimitComp"
 
 
 export class StudentPage extends Component {
@@ -13,32 +12,23 @@ export class StudentPage extends Component {
             <div>
                 <Router>
                     <Switch>
-                        <Route path="/student/myTutor">
-                            <StudentMyTutorComp
+                        <Route path="/admin/assign">
+                            <AssignStudentComp
                                 userId={this.props.userId}/>
                         </Route>
-                        <Route path="/student/researchArea">
-                            <StudentResearchAreaComp
+                        <Route path="/admin/setNumLimit">
+                            <SetTutorNumLimitComp
                                 userId={this.props.userId}/>
                         </Route>
-                        <Route path="/student/select">
-                            <StudentSelectTutorComp
-                                userId={this.props.userId}/>
-                        </Route>
-                        <Route path="/student">
+                        <Route path="/admin">
                             <div className="link">
-                                <Link to="/student/select">
-                                    <h1>select</h1>
+                                <Link to="/admin/assign">
+                                    <h1>assign</h1>
                                 </Link>
                             </div>
                             <div className="link">
-                                <Link to="/student/researchArea">
-                                    <h1>researchArea</h1>
-                                </Link>
-                            </div>
-                            <div className="link">
-                                <Link to="/student/myTutor">
-                                    <h1>myStudent</h1>
+                                <Link to="/admin/setNumLimit">
+                                    <h1>setNumLimit</h1>
                                 </Link>
                             </div>
                         </Route>

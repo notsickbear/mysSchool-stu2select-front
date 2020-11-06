@@ -4,6 +4,7 @@ import {HashRouter as Router, Link, Route, Switch} from 'react-router-dom'
 import TutorPage from './layout/TutorPage';
 import React from "react";
 import StudentPage from "./layout/StudentPage";
+import AdminPage from "./layout/AdminPage";
 
 function App() {
     return (
@@ -18,6 +19,10 @@ function App() {
                         <StudentPage
                             userId={1}/>
                     </Route>
+                    <Route path="/admin">
+                        <AdminPage
+                            userId={1}/>
+                    </Route>
                     <Route path="/">
                         <div className="link">
                             <Link to="/tutor">
@@ -27,6 +32,11 @@ function App() {
                         <div className="link">
                             <Link to="/student">
                                 <h1>student</h1>
+                            </Link>
+                        </div>
+                        <div className="link">
+                            <Link to="/admin">
+                                <h1>admin</h1>
                             </Link>
                         </div>
                     </Route>

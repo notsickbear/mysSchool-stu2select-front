@@ -41,7 +41,7 @@ export class Comp extends Component {
                     <th colSpan={4} className="link" onClick={() => this.saveStaticData()}>保存学生选择</th>
                 </tr>
             ),
-            'numLimit': 2
+            'numLimit': 3
         }
     }
 
@@ -49,6 +49,10 @@ export class Comp extends Component {
     addToStatic = (item) => {
         if (this.state.thold.findIndex(item => item.props.itemID === item.id) === -1) {
             if (this.state.thold.length < this.state.numLimit) {
+                if (item.major === null) item.major = {"name": ""}
+                if (item.area1 === null) item.area1 = {"name": ""}
+                if (item.area2 === null) item.area2 = {"name": ""}
+                if (item.area3 === null) item.area3 = {"name": ""}
                 this.setState({
                     thold: [...this.state.thold, (
                         <tr key={item.id} itemID={item.id}>
@@ -81,14 +85,23 @@ export class Comp extends Component {
         SelectStateApi.getSelectStateByStuIdAndPeriod(this.props.userId, this.state.period).then((res) => {
             let thold = {}
             if (res.selectState === 1) {
-                thold = <tr><td><Router><Switch>
-                    <Route path="/student/myTutor"><StudentMyTutorComp userId={this.props.userId}/></Route>
-                    <Route path="/student"><div className="link">
-                        <Link to="/student/myTutor">你已经被导师选中了，快来查看你的导师</Link>
-                    </div></Route></Switch></Router></td></tr>
+                thold = <tr>
+                    <td><Router><Switch>
+                        <Route path="/student/myTutor"><StudentMyTutorComp userId={this.props.userId}/></Route>
+                        <Route path="/student">
+                            <div className="link">
+                                <Link to="/student/myTutor">你已经被导师选中了，快来查看你的导师</Link>
+                            </div>
+                        </Route></Switch></Router></td>
+                </tr>
+                this.setState({tholdHead: (<br/>)})
             } else {
                 let areas = [res.tutor1, res.tutor2, res.tutor3]
                 thold = areas.map((area) => {
+                    if (area.major === null) area.major = {"name": ""}
+                    if (area.area1 === null) area.area1 = {"name": ""}
+                    if (area.area2 === null) area.area2 = {"name": ""}
+                    if (area.area3 === null) area.area3 = {"name": ""}
                     return (
                         <tr key={area.id} itemID={area.id}>
                             <td>{area.id}</td>
@@ -103,7 +116,7 @@ export class Comp extends Component {
                     )
                 })
             }
-            this.setState({thold: thold, tholdHead: (<br/>)})
+            this.setState({thold: thold})
         })
     }
     //  保存已选择的内容
@@ -122,16 +135,21 @@ export class Comp extends Component {
                 SelectStateApi.saveSelectState(param).then((ret) => {
                     toast(ret)
                     this.getStaticData()
+                    this.getTableData(0)
                 })
             })
         })
     }
     // es6 使用箭头函数定义函数时可以省略 function 关键字
     getTableData = (page) => {
-        StudentApi.getAllEnableTutor(this.props.userId, page).then((res) => {
+        StudentApi.getAllEnableTutor(page).then((res) => {
             const tbody = res.content.map((item) => {
+                if (item.major === null) item.major = {"name": ""}
+                if (item.area1 === null) item.area1 = {"name": ""}
+                if (item.area2 === null) item.area2 = {"name": ""}
+                if (item.area3 === null) item.area3 = {"name": ""}
                 return (
-                    <tr key={item.id}>
+                    <tr key={item.id} itemID={item.id}>
                         <td>{item.id}</td>
                         <td>{item.no}</td>
                         <td>{item.name}</td>
@@ -158,7 +176,9 @@ export class Comp extends Component {
                 <div>
                     <StaticTableAsset
                         thead={this.state.tholdHead}
-                        tbody={this.state.thold}/>
+                        tbody={this.state.thold}
+                        numLimit={this.state.numLimit}
+                    />
                 </div>
                 <br/>
                 <div>
