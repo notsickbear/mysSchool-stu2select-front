@@ -1,25 +1,56 @@
 .link {
-    color: deepskyblue;
+    color: white;
     transform: 0.2s linear;
+    border: 1px solid black;
+    background-color: dodgerblue;
 }
 
 .link:hover {
-    color: dodgerblue;
+    font-size: 115%;
+    background-color: deepskyblue;
     cursor: pointer;
+}
+
+table {
+    font-size: 20px;
+    text-align: center;
+    padding: 5px;
+    border: 1px solid black;
+    border-collapse: collapse;
+    transform: 0.2s linear;
+    background-color: silver;
 }
 
 .table {
     text-align: center;
+    width: 80%;
+}
+
+tr {
+    background-color: ghostwhite;
+}
+
+td, th {
     border: 1px solid black;
+}
+
+tr:hover {
+    background-color: aliceblue;
 }
 
 .page {
     display: inline;
     padding-left: 10px;
-    font-size: 2em;
+    font-size: 16px;
     border: 1px solid black;
 }
 
 .page:hover {
+    font-size: 115%;
     cursor: pointer;
+}
+
+.errorText {
+    font-size: 14px;
+    color: red;
 }

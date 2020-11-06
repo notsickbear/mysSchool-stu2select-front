@@ -55,6 +55,7 @@ const saveTutor = async (param) => {
 };
 
 // es6语法 import、export、export default
+// eslint觉得我这导出不符合规范
 // eslint-disable-next-line import/no-anonymous-default-export
 export default {
     getSmartSortStudent: getSmartSortStudent,

@@ -5,7 +5,7 @@ import StudentApi from '../api/StudentApi'
 import SelectStateApi from "../api/SelectStateApi";
 import {toast, ToastContainer} from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import {HashRouter as Router, Link, Route, Switch} from 'react-router-dom'
+import {BrowserRouter as Router, Link, Route, Switch} from 'react-router-dom'
 import StudentMyTutorComp from "./StudentMyTutorComp";
 
 export class Comp extends Component {
@@ -38,7 +38,7 @@ export class Comp extends Component {
             )],
             'tholdHead': (
                 <tr>
-                    <th colSpan={4} className="link" onClick={() => this.saveStaticData()}>保存学生选择</th>
+                    <th colSpan={8} className="link" onClick={() => this.saveStaticData()}>保存学生选择</th>
                 </tr>
             ),
             'numLimit': 3
@@ -83,21 +83,18 @@ export class Comp extends Component {
     // 初始化已选择的内容
     getStaticData = () => {
         SelectStateApi.getSelectStateByStuIdAndPeriod(this.props.userId, this.state.period).then((res) => {
-            let thold = {}
             if (res.selectState === 1) {
-                thold = <tr>
+                let tholdHead = <tr>
                     <td><Router><Switch>
                         <Route path="/student/myTutor"><StudentMyTutorComp userId={this.props.userId}/></Route>
                         <Route path="/student">
-                            <div className="link">
-                                <Link to="/student/myTutor">你已经被导师选中了，快来查看你的导师</Link>
-                            </div>
+                            <Link to="/student/myTutor"><p className="link">你已经被导师选中了，快来查看你的导师</p></Link>
                         </Route></Switch></Router></td>
                 </tr>
-                this.setState({tholdHead: (<br/>)})
+                this.setState({tholdHead: tholdHead})
             } else {
                 let areas = [res.tutor1, res.tutor2, res.tutor3]
-                thold = areas.map((area) => {
+                let thold = areas.map((area) => {
                     if (area.major === null) area.major = {"name": ""}
                     if (area.area1 === null) area.area1 = {"name": ""}
                     if (area.area2 === null) area.area2 = {"name": ""}
@@ -115,8 +112,8 @@ export class Comp extends Component {
                         </tr>
                     )
                 })
+                this.setState({thold: thold})
             }
-            this.setState({thold: thold})
         })
     }
     //  保存已选择的内容
@@ -138,6 +135,7 @@ export class Comp extends Component {
                     this.getTableData(0)
                 })
             })
+            return
         })
     }
     // es6 使用箭头函数定义函数时可以省略 function 关键字

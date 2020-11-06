@@ -5,7 +5,7 @@ import TutorApi from '../api/TutorApi'
 import SelectStateApi from "../api/SelectStateApi";
 import {toast, ToastContainer} from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import {HashRouter as Router, Link, Route, Switch} from "react-router-dom";
+import {BrowserRouter as Router, Link, Route, Switch} from "react-router-dom";
 import StudentMyTutorComp from "./StudentMyTutorComp";
 
 export class Comp extends Component {
@@ -38,7 +38,7 @@ export class Comp extends Component {
             )],
             'tholdHead': (
                 <tr>
-                    <th colSpan={4} className="link" onClick={() => this.saveStaticData()}>保存学生选择</th>
+                    <th colSpan={8} className="link" onClick={() => this.saveStaticData()}>保存学生选择</th>
                 </tr>
             ),
             'numLimit': 2
@@ -83,20 +83,17 @@ export class Comp extends Component {
     // 初始化已选择的内容
     getStaticData = () => {
         TutorApi.getAllStudentByTutorIdAndPeriod(this.props.userId, this.state.period).then((res) => {
-            let thold
             if (res.selectState === 1) {
-                thold = <tr>
+                let tholdHead = <tr>
                     <td><Router><Switch>
                         <Route path="/tutor/myStudent"><StudentMyTutorComp userId={this.props.userId}/></Route>
                         <Route path="/tutor">
-                            <div className="link">
-                                <Link to="/tutor/myStudent">你已经选满学生了，快来查看你的学生</Link>
-                            </div>
+                            <Link to="/tutor/myStudent"><p className="link">你已经选满学生了，快来查看你的学生</p></Link>
                         </Route></Switch></Router></td>
                 </tr>
-                this.setState({tholdHead: (<br/>)})
+                this.setState({tholdHead: tholdHead})
             } else {
-                thold = res.content.map((student) => {
+                let thold = res.content.map((student) => {
                     if (student.major === null) student.major = {"name": ""}
                     if (student.area1 === null) student.area1 = {"name": ""}
                     if (student.area2 === null) student.area2 = {"name": ""}
@@ -114,9 +111,8 @@ export class Comp extends Component {
                         </tr>
                     )
                 })
-
+                this.setState({thold: thold})
             }
-            this.setState({thold: thold})
         })
     }
     //  保存已选择的内容
