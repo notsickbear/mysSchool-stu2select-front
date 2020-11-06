@@ -1,49 +1,27 @@
-// import logo from './logo.svg';
 import './css/App.css';
-import {HashRouter as Router, Link, Route, Switch} from 'react-router-dom'
-import TutorPage from './layout/TutorPage';
+import {Link} from 'react-router-dom'
 import React from "react";
-import StudentPage from "./layout/StudentPage";
-import AdminPage from "./layout/AdminPage";
 
-function App() {
-    return (
-        <div className="App">
-            <Router>
-                <Switch>
-                    <Route path="/tutor">
-                        <TutorPage
-                            userId={1}/>
-                    </Route>
-                    <Route path="/student">
-                        <StudentPage
-                            userId={1}/>
-                    </Route>
-                    <Route path="/admin">
-                        <AdminPage
-                            userId={1}/>
-                    </Route>
-                    <Route path="/">
-                        <div className="link">
-                            <Link to="/tutor">
-                                <h1>tutor</h1>
-                            </Link>
-                        </div>
-                        <div className="link">
-                            <Link to="/student">
-                                <h1>student</h1>
-                            </Link>
-                        </div>
-                        <div className="link">
-                            <Link to="/admin">
-                                <h1>admin</h1>
-                            </Link>
-                        </div>
-                    </Route>
-                </Switch>
-            </Router>
-        </div>
-    );
+
+export default class App extends React.Component {
+    render() {
+        return (
+            <div className="App">
+                {this.props.children}
+                <div className="link">
+                    <Link to="/tutor">tutor</Link>
+                </div>
+                <div className="link">
+                    <Link to="/student">student</Link>
+                </div>
+                <div className="link">
+                    <Link to="/admin">admin</Link>
+                </div>
+                <div className="link">
+                    <Link to="/login">login</Link>
+                </div>
+            </div>
+        );
+    }
 }
 
-export default App;
