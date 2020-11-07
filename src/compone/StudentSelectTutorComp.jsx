@@ -5,8 +5,7 @@ import StudentApi from '../api/StudentApi'
 import SelectStateApi from "../api/SelectStateApi";
 import {toast, ToastContainer} from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import StudentMyTutorComp from "./StudentMyTutorComp";
-import {BrowserRouter as Router, Link, Route, Switch, withRouter} from "react-router-dom";
+import {withRouter} from "react-router-dom";
 
 export class Comp extends Component {
     constructor(props) {
@@ -18,10 +17,10 @@ export class Comp extends Component {
             "thead": [(
                 <tr key={0}>
                     <th>id</th>
-                    <th>学号</th>
+                    <th>职工号</th>
                     <th>姓名</th>
                     <th>专业</th>
-                    <th colSpan="3">志愿方向</th>
+                    <th colSpan="3">研究方向</th>
                     <th>操作</th>
                 </tr>
             )],
@@ -47,6 +46,7 @@ export class Comp extends Component {
 
     // 添加到已选择的内容（thold），点击保存以前数据仅保存在当前页面
     addToStatic = (item) => {
+        console.log(this.state.thold.findIndex(item => item.props.itemID === item.id))
         if (this.state.thold.findIndex(item => item.props.itemID === item.id) === -1) {
             if (this.state.thold.length < this.state.numLimit) {
                 if (item.major === null) item.major = {"name": ""}
@@ -80,38 +80,42 @@ export class Comp extends Component {
         data.splice(data.findIndex(item => item.props.itemID === id), 1)
         this.setState({thold: data})
     }
+    leapTo=()=>{
+        this.props.history.push({pathname: "/student/myTutor", state: {userId: this.props.location.state.userId},})
+    }
     // 初始化已选择的内容
     getStaticData = () => {
         SelectStateApi.getSelectStateByStuIdAndPeriod(this.props.location.state.userId, this.state.period).then((res) => {
+            console.log(this.props.location.state.userId)
             if (res.selectState === 1) {
                 let tholdHead = <tr>
-                    <td><Router><Switch>
-                        <Route path="/student/myTutor"><StudentMyTutorComp
-                            userId={this.props.location.state.userId}/></Route>
-                        <Route path="/student">
-                            <Link to="/student/myTutor"><p className="link">你已经被导师选中了，快来查看你的导师</p></Link>
-                        </Route></Switch></Router></td>
+                    <td className="link" onClick={() => this.leapTo()}>你已经被导师选中了，快来查看你的导师</td>
                 </tr>
                 this.setState({tholdHead: tholdHead})
             } else {
                 let areas = [res.tutor1, res.tutor2, res.tutor3]
+                for (let i = 0; i < areas.length; i++){
+                    if (areas[i] === null) areas.splice(i--, 1)
+                }
                 let thold = areas.map((area) => {
-                    if (area.major === null) area.major = {"name": ""}
-                    if (area.area1 === null) area.area1 = {"name": ""}
-                    if (area.area2 === null) area.area2 = {"name": ""}
-                    if (area.area3 === null) area.area3 = {"name": ""}
-                    return (
-                        <tr key={area.id} itemID={area.id}>
-                            <td>{area.id}</td>
-                            <td>{area.no}</td>
-                            <td>{area.name}</td>
-                            <td>{area.major.name}</td>
-                            <td>{area.area1.name}</td>
-                            <td>{area.area2.name}</td>
-                            <td>{area.area3.name}</td>
-                            <td className="link" onClick={() => this.dropFromStatic(area.id)}>移除</td>
-                        </tr>
-                    )
+                    if (area !== null) {
+                        if (area.major === null) area.major = {"name": ""}
+                        if (area.area1 === null) area.area1 = {"name": ""}
+                        if (area.area2 === null) area.area2 = {"name": ""}
+                        if (area.area3 === null) area.area3 = {"name": ""}
+                        return (
+                            <tr key={area.id} itemID={area.id}>
+                                <td>{area.id}</td>
+                                <td>{area.no}</td>
+                                <td>{area.name}</td>
+                                <td>{area.major.name}</td>
+                                <td>{area.area1.name}</td>
+                                <td>{area.area2.name}</td>
+                                <td>{area.area3.name}</td>
+                                <td className="link" onClick={() => this.dropFromStatic(area.id)}>移除</td>
+                            </tr>
+                        )
+                    }else return (<b/>)
                 })
                 this.setState({thold: thold})
             }
@@ -136,19 +140,19 @@ export class Comp extends Component {
                     this.getTableData(0)
                 })
             })
-            return
+            return 1
         })
     }
     // es6 使用箭头函数定义函数时可以省略 function 关键字
     getTableData = (page) => {
-        StudentApi.getAllEnableTutor(page).then((res) => {
-            const tbody = res.content.map((item) => {
+        StudentApi.getSmartSortTutor(this.props.location.state.userId, page).then((res) => {
+            const tbody = res.content.map((item, index) => {
                 if (item.major === null) item.major = {"name": ""}
                 if (item.area1 === null) item.area1 = {"name": ""}
                 if (item.area2 === null) item.area2 = {"name": ""}
                 if (item.area3 === null) item.area3 = {"name": ""}
                 return (
-                    <tr key={item.id} itemID={item.id}>
+                    <tr key={index} itemID={item.id}>
                         <td>{item.id}</td>
                         <td>{item.no}</td>
                         <td>{item.name}</td>

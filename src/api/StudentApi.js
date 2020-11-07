@@ -10,7 +10,7 @@ const getSmartSortTutor = async (id, page = 0, size = 10) => {
     return ret
 };
 
-const getStudentById = async (id, page = 0, size = 10) => {
+const getStudentById = async (id) => {
     let ret = '';
     // 注意兩邊是tab上方的`而不是單引號
     await http.get(`api/student/${id}`).then((res) => {

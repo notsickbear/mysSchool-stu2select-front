@@ -5,8 +5,7 @@ import TutorApi from '../api/TutorApi'
 import SelectStateApi from "../api/SelectStateApi";
 import {toast, ToastContainer} from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import {BrowserRouter as Router, Link, Route, Switch, withRouter} from "react-router-dom";
-import StudentMyTutorComp from "./StudentMyTutorComp";
+import {withRouter} from "react-router-dom";
 
 export class Comp extends Component {
     constructor(props) {
@@ -74,6 +73,9 @@ export class Comp extends Component {
             toast("学生不能重复添加")
         }
     }
+    leapTo=()=>{
+        this.props.history.push({pathname: "/tutor/myStudent", state: {userId: this.props.location.state.userId},})
+    }
     // 从已选择的内容中移除，点击保存以前数据仅保存在当前页面
     dropFromStatic = (id) => {
         let data = this.state.thold
@@ -83,37 +85,25 @@ export class Comp extends Component {
     // 初始化已选择的内容
     getStaticData = () => {
         TutorApi.getAllStudentByTutorIdAndPeriod(this.props.location.state.userId, this.state.period).then((res) => {
-            if (res.selectState === 1) {
-                let tholdHead = <tr>
-                    <td><Router><Switch>
-                        <Route path="/tutor/myStudent"><StudentMyTutorComp
-                            userId={this.props.location.state.userId}/></Route>
-                        <Route path="/tutor">
-                            <Link to="/tutor/myStudent"><p className="link">你已经选满学生了，快来查看你的学生</p></Link>
-                        </Route></Switch></Router></td>
-                </tr>
-                this.setState({tholdHead: tholdHead})
-            } else {
-                let thold = res.content.map((student) => {
-                    if (student.major === null) student.major = {"name": ""}
-                    if (student.area1 === null) student.area1 = {"name": ""}
-                    if (student.area2 === null) student.area2 = {"name": ""}
-                    if (student.area3 === null) student.area3 = {"name": ""}
-                    return (
-                        <tr key={student.id} itemID={student.id}>
-                            <td>{student.id}</td>
-                            <td>{student.no}</td>
-                            <td>{student.name}</td>
-                            <td>{student.major.name}</td>
-                            <td>{student.area1.name}</td>
-                            <td>{student.area2.name}</td>
-                            <td>{student.area3.name}</td>
-                            <td>已保存，无法移除</td>
-                        </tr>
-                    )
-                })
-                this.setState({thold: thold})
-            }
+            let thold = res.content.map((student) => {
+                if (student.major === null) student.major = {"name": ""}
+                if (student.area1 === null) student.area1 = {"name": ""}
+                if (student.area2 === null) student.area2 = {"name": ""}
+                if (student.area3 === null) student.area3 = {"name": ""}
+                return (
+                    <tr key={student.id} itemID={student.id}>
+                        <td>{student.id}</td>
+                        <td>{student.no}</td>
+                        <td>{student.name}</td>
+                        <td>{student.major.name}</td>
+                        <td>{student.area1.name}</td>
+                        <td>{student.area2.name}</td>
+                        <td>{student.area3.name}</td>
+                        <td>已保存，无法移除</td>
+                    </tr>
+                )
+            })
+            this.setState({thold: thold})
         })
     }
     //  保存已选择的内容
@@ -140,14 +130,14 @@ export class Comp extends Component {
     }
     // es6 使用箭头函数定义函数时可以省略 function 关键字
     getTableData = (page) => {
-        TutorApi.getEnableStudent(this.props.location.state.userId, this.state.period, page).then((res) => {
-            const tbody = res.content.map((student) => {
+        TutorApi.getSmartSortStudent(this.props.location.state.userId, this.state.period, page).then((res) => {
+            const tbody = res.content.map((student, index) => {
                 if (student.major === null) student.major = {"name": ""}
                 if (student.area1 === null) student.area1 = {"name": ""}
                 if (student.area2 === null) student.area2 = {"name": ""}
                 if (student.area3 === null) student.area3 = {"name": ""}
                 return (
-                    <tr key={student.id}>
+                    <tr key={index} itemID={student.id}>
                         <td>{student.id}</td>
                         <td>{student.no}</td>
                         <td>{student.name}</td>

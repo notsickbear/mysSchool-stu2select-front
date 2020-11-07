@@ -9,7 +9,7 @@ export class StudentPage extends Component {
             <div>
                 <Link to={{
                     pathname: "/student/select",
-                    state: {userId: 1}
+                    state: {userId: this.props.location.state.userId}
                 }}>
                     <div className="link">select</div>
                 </Link>

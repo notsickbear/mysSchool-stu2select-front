@@ -1,9 +1,9 @@
-import React, {Component} from 'react'
+import React, { Component } from 'react'
 import TableAsset from '../assets/TableAsset'
 import TutorApi from '../api/TutorApi'
-import {ToastContainer} from 'react-toastify';
+import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import {withRouter} from "react-router-dom";
+import { withRouter } from "react-router-dom";
 
 export class TutorMyStudentComp extends Component {
     constructor(props) {
@@ -27,7 +27,7 @@ export class TutorMyStudentComp extends Component {
             )],
             'tbody': [(
                 <tr key={-1}>
-                    <td/>
+                    <td />
                 </tr>
             )],
             'totalPages': 1
@@ -39,6 +39,10 @@ export class TutorMyStudentComp extends Component {
         // api的async和await使得then能获得res
         TutorApi.getAllStudentByTutorIdAndPeriod(this.props.location.state.userId, this.state.period, page).then((res) => {
             const tbody = res.content.map((student) => {
+                if (student.major === null) student.major = { "name": "" }
+                if (student.area1 === null) student.area1 = { "name": "" }
+                if (student.area2 === null) student.area2 = { "name": "" }
+                if (student.area3 === null) student.area3 = { "name": "" }
                 return (
                     <tr key={student.id}>
                         <td>{student.id}</td>
@@ -51,7 +55,7 @@ export class TutorMyStudentComp extends Component {
                     </tr>
                 )
             });
-            this.setState({tbody: tbody, totalPage: res.totalPages})
+            this.setState({ tbody: tbody, totalPage: res.totalPages })
         })
     }
 
@@ -68,8 +72,8 @@ export class TutorMyStudentComp extends Component {
                     thead={this.state.thead}
                     tbody={this.state.tbody}
                     totalPages={this.state.totalPage}
-                    getTableDate={this.getTableData}/>
-                <ToastContainer/>
+                    getTableDate={this.getTableData} />
+                <ToastContainer />
             </div>
         )
     }

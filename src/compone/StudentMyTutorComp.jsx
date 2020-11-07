@@ -3,6 +3,7 @@ import TableAsset from '../assets/TableAsset'
 import StudentApi from '../api/StudentApi'
 import {ToastContainer} from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { withRouter } from "react-router-dom";
 
 export class TutorMyStudentComp extends Component {
     constructor(props) {
@@ -35,20 +36,31 @@ export class TutorMyStudentComp extends Component {
 
     // 使用箭头函数定义函数时可以省略 function 关键字
     getTableData = () => {
+        console.log(this.props.location.state.userId)
         // api的async和await使得then能获得res
         StudentApi.getStudentById(this.props.location.state.userId).then((res) => {
             let item = res.tutor
-            const tbody = (
-                <tr key={item.id}>
-                    <td>{item.id}</td>
-                    <td>{item.no}</td>
-                    <td>{item.name}</td>
-                    <td>{item.major.name}</td>
-                    <td>{item.area1.name}</td>
-                    <td>{item.area2.name}</td>
-                    <td>{item.area3.name}</td>
-                </tr>
-            )
+            let tbody
+            if (item === null){
+                tbody = (<tr><td  colSpan="7">你还没有导师</td></tr>)
+            }else{
+                if (item.major === null) item.major = {"name": ""}
+                if (item.area1 === null) item.area1 = {"name": ""}
+                if (item.area2 === null) item.area2 = {"name": ""}
+                if (item.area3 === null) item.area3 = {"name": ""}
+                tbody = (
+                    <tr key={item.id}>
+                        <td>{item.id}</td>
+                        <td>{item.no}</td>
+                        <td>{item.name}</td>
+                        <td>{item.major.name}</td>
+                        <td>{item.area1.name}</td>
+                        <td>{item.area2.name}</td>
+                        <td>{item.area3.name}</td>
+                    </tr>
+                )
+            }
+            
             this.setState({tbody: tbody, totalPage: 1})
         })
     }
@@ -71,4 +83,4 @@ export class TutorMyStudentComp extends Component {
     }
 }
 
-export default TutorMyStudentComp
+export default withRouter(TutorMyStudentComp)

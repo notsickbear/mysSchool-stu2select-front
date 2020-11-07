@@ -30,8 +30,6 @@ export class Comp extends Component {
                 } else {
                     UserApi.getUserById(param.id).then((ret) => {
                         let type = parseInt(ret.type);
-                        console.log(type)
-                        console.log(1 === type)
                         if (1 === type)
                             this.props.history.push({pathname: "/student", state: {userId: userId},})
                         if (2 === type)
