@@ -5,6 +5,7 @@ import StudentApi from '../api/StudentApi'
 import ResearchAreaApi from '../api/ResearchAreaApi'
 import {toast, ToastContainer} from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import {withRouter} from "react-router-dom";
 
 export class ResearchAreaComp extends Component {
     constructor(props) {
@@ -67,7 +68,7 @@ export class ResearchAreaComp extends Component {
     }
     // 初始化已选择的内容
     getStaticData = () => {
-        StudentApi.getStudentById(this.props.userId).then((res) => {
+        StudentApi.getStudentById(this.props.location.state.userId).then((res) => {
             let thold
             let areas = [res.area1, res.area2, res.area3]
             thold = areas.map((area) => {
@@ -90,7 +91,7 @@ export class ResearchAreaComp extends Component {
         let ids = data.map((item) => {
             return parseInt(item.props.itemID)
         })
-        let param = {"id": parseInt(this.props.userId)}
+        let param = {"id": parseInt(this.props.location.state.userId)}
         if (ids.length > 0) param["area1"] = {"id": ids[0]}
         if (ids.length > 1) param["area1"] = {"id": ids[1]}
         if (ids.length > 2) param["area1"] = {"id": ids[2]}
@@ -144,4 +145,4 @@ export class ResearchAreaComp extends Component {
     }
 }
 
-export default ResearchAreaComp
+export default withRouter(ResearchAreaComp)

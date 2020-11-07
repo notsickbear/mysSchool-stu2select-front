@@ -1,10 +1,18 @@
 import './css/App.css';
-import {BrowserRouter as Router, Link, Route, Switch} from 'react-router-dom'
+import {BrowserRouter as Router, Route, Switch} from 'react-router-dom'
 import React from "react";
 import TutorPage from "./page/TutorPage";
 import StudentPage from "./page/StudentPage";
 import AdminPage from "./page/AdminPage";
 import LoginComp from "./page/LoginPage";
+import TutorMyStudentComp from "./compone/TutorMyStudentComp";
+import TutorResearchAreaComp from "./compone/TutorResearchAreaComp";
+import TutorSelectStudentComp from "./compone/TutorSelectStudentComp";
+import StudentMyTutorComp from "./compone/StudentMyTutorComp";
+import StudentResearchAreaComp from "./compone/StudentResearchAreaComp";
+import StudentSelectTutorComp from "./compone/StudentSelectTutorComp";
+import AssignStudentComp from "./compone/AssignStudentComp";
+import SetTutorNumLimitComp from "./compone/SetTutorNumLimitComp";
 
 
 export default class App extends React.Component {
@@ -13,35 +21,43 @@ export default class App extends React.Component {
             <div className="App">
                 <Router>
                     <Switch>
+                        <Route path="/tutor/myStudent">
+                            <TutorMyStudentComp/>
+                        </Route>
+                        <Route path="/tutor/researchArea">
+                            <TutorResearchAreaComp/>
+                        </Route>
+                        <Route path="/tutor/select">
+                            <TutorSelectStudentComp/>
+                        </Route>
                         <Route path="/tutor">
-                            <TutorPage
-                                userId={1}/>
+                            <TutorPage/>
+                        </Route>
+                        <Route path="/student/myTutor">
+                            <StudentMyTutorComp/>
+                        </Route>
+                        <Route path="/student/researchArea">
+                            <StudentResearchAreaComp/>
+                        </Route>
+                        <Route path="/student/select">
+                            <StudentSelectTutorComp/>
                         </Route>
                         <Route path="/student">
-                            <StudentPage
-                                userId={1}/>
+                            <StudentPage/>
+                        </Route>
+                        <Route path="/admin/assign">
+                            <AssignStudentComp/>
+                        </Route>
+                        <Route path="/admin/setNumLimit">
+                            <SetTutorNumLimitComp/>
                         </Route>
                         <Route path="/admin">
-                            <AdminPage
-                                userId={1}/>
+                            <AdminPage/>
                         </Route>
                         <Route path="/login">
                             <LoginComp/>
                         </Route>
-                        <Route path="/">
-                            <Link to="/tutor">
-                                <div className="link">tutor</div>
-                            </Link>
-                            <Link to="/student">
-                                <div className="link">student</div>
-                            </Link>
-                            <Link to="/admin">
-                                <div className="link">admin</div>
-                            </Link>
-                            <Link to="/login">
-                                <div className="link">login</div>
-                            </Link>
-                        </Route>
+                        <LoginComp/>
                     </Switch>
                 </Router>
             </div>

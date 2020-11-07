@@ -3,6 +3,7 @@ import TableAsset from '../assets/TableAsset'
 import TutorApi from '../api/TutorApi'
 import {ToastContainer} from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import {withRouter} from "react-router-dom";
 
 export class TutorMyStudentComp extends Component {
     constructor(props) {
@@ -36,7 +37,7 @@ export class TutorMyStudentComp extends Component {
     // 使用箭头函数定义函数时可以省略 function 关键字
     getTableData = (page) => {
         // api的async和await使得then能获得res
-        TutorApi.getAllStudentByTutorIdAndPeriod(this.props.userId, this.state.period, page).then((res) => {
+        TutorApi.getAllStudentByTutorIdAndPeriod(this.props.location.state.userId, this.state.period, page).then((res) => {
             const tbody = res.content.map((student) => {
                 return (
                     <tr key={student.id}>
@@ -74,4 +75,4 @@ export class TutorMyStudentComp extends Component {
     }
 }
 
-export default TutorMyStudentComp
+export default withRouter(TutorMyStudentComp)

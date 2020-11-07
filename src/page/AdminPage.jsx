@@ -1,43 +1,30 @@
 import React, {Component} from 'react'
 import 'react-toastify/dist/ReactToastify.css';
-import {BrowserRouter as Router, Link, Route, Switch} from 'react-router-dom'
-import AssignStudentComp from "../compone/AssignStudentComp";
-import SetTutorNumLimitComp from "../compone/SetTutorNumLimitComp";
+import {Link, withRouter} from 'react-router-dom'
 
 export class StudentPage extends Component {
     // TODO:select 的备选项查询 /*useId={this.props.useId}*/
     render() {
         return (
             <div>
-                <Router>
-                    <Switch>
-                        <Route path="/admin/assign">
-                            <AssignStudentComp
-                                userId={this.props.userId}/>
-                        </Route>
-                        <Route path="/admin/setNumLimit">
-                            <SetTutorNumLimitComp
-                                userId={this.props.userId}/>
-                        </Route>
-                        <Route path="/admin">
-                            <Link to={{
-                                pathname: "/admin/assign",
-                                state: {userId: this.props.userId}
-                            }}>
-                                <div className="link">assign</div>
-                            </Link>
-                            <Link to={{
-                                pathname: "/admin/setNumLimit",
-                                state: {userId: this.props.userId}
-                            }}>
-                                <div className="link">setNumLimit</div>
-                            </Link>
-                        </Route>
-                    </Switch>
-                </Router>
+                <Link to={{
+                    pathname: "/admin/assign",
+                    state: {userId: this.props.location.state.userId}
+                }}>
+                    <div className="link">assign</div>
+                </Link>
+                <Link to={{
+                    pathname: "/admin/setNumLimit",
+                    state: {userId: this.props.location.state.userId}
+                }}>
+                    <div className="link">setNumLimit</div>
+                </Link>
+                <Link to="/login">
+                    <div className="link">注销</div>
+                </Link>
             </div>
         )
     }
 }
 
-export default StudentPage
+export default withRouter(StudentPage)

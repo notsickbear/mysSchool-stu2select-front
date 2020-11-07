@@ -2,6 +2,7 @@ import React, {Component} from 'react'
 import {toast} from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import UserApi from "../api/UserApi";
+import {withRouter} from 'react-router-dom'
 
 export class Comp extends Component {
     constructor(props) {
@@ -13,21 +14,32 @@ export class Comp extends Component {
             "pw": 0,
             "pwError": "",
             "pwState": 0,
-            "userId": 0
+            "comp": (
+                <p>正在为您跳转到登录界面</p>
+            )
         }
     }
 
     submit = () => {
-        console.log(this.state)
         if (this.state.idState === 1 && this.state.pwState === 1) {
             let param = {"id": parseInt(this.state.id), "pw": this.state.pw}
             UserApi.isCorrectLogin(param).then((res) => {
-                console.log(res)
-                toast(res)
-                UserApi.getUserById(this.state.id).then((ret) => {
-                    console.log(ret)
-                    this.setState({userId: ret.userId})
-                })
+                let userId = parseInt(res)
+                if (userId === -1) {
+                    toast("登录失败，账号密码不匹配")
+                } else {
+                    UserApi.getUserById(param.id).then((ret) => {
+                        let type = parseInt(ret.type);
+                        console.log(type)
+                        console.log(1 === type)
+                        if (1 === type)
+                            this.props.history.push({pathname: "/student", state: {userId: userId},})
+                        if (2 === type)
+                            this.props.history.push({pathname: "/tutor", state: {userId: userId},})
+                        if (3 === type || 4 === type)
+                            this.props.history.push({pathname: "/admin", state: {userId: userId},})
+                    })
+                }
             })
         }
     }
@@ -62,31 +74,38 @@ export class Comp extends Component {
         if ("" === this.state.pwError) this.setState({pw: value})
     }
 
+    componentDidMount() {
+        this.setState({
+            comp: (
+                <div>
+                    <label>账号:</label>
+                    <input
+                        id="uid"
+                        type="text"
+                        placeholder="在这里输入纯数字账号"
+                        onChange={() => this.checkId()}
+                        onBlur={() => this.saveId()}
+                    />
+                    <p className="errorText">{this.state.idError}</p>
+                    <label>密码:</label>
+                    <input
+                        id="pw"
+                        type="password"
+                        placeholder="在这里输入密码"
+                        onChange={() => this.checkPw()}
+                        onBlur={() => this.savePw()}
+                    />
+                    <p className="errorText">{this.state.pwError}</p>
+                    <button onClick={() => this.submit()}>登录</button>
+                </div>)
+        })
+    }
+
     render() {
         return (
-            <div>
-                <label>账号:</label>
-                <input
-                    id="uid"
-                    type="text"
-                    placeholder="在这里输入纯数字账号"
-                    onChange={() => this.checkId()}
-                    onBlur={() => this.saveId()}
-                />
-                <p className="errorText">{this.state.idError}</p>
-                <label>密码:</label>
-                <input
-                    id="pw"
-                    type="password"
-                    placeholder="在这里输入密码"
-                    onChange={() => this.checkPw()}
-                    onBlur={() => this.savePw()}
-                />
-                <p className="errorText">{this.state.pwError}</p>
-                <button onClick={() => this.submit()}>登录</button>
-            </div>
+            <div>{this.state.comp}</div>
         )
     }
 }
 
-export default Comp
+export default withRouter(Comp)

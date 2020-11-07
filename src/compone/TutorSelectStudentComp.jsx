@@ -5,7 +5,7 @@ import TutorApi from '../api/TutorApi'
 import SelectStateApi from "../api/SelectStateApi";
 import {toast, ToastContainer} from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import {BrowserRouter as Router, Link, Route, Switch} from "react-router-dom";
+import {BrowserRouter as Router, Link, Route, Switch, withRouter} from "react-router-dom";
 import StudentMyTutorComp from "./StudentMyTutorComp";
 
 export class Comp extends Component {
@@ -82,11 +82,12 @@ export class Comp extends Component {
     }
     // 初始化已选择的内容
     getStaticData = () => {
-        TutorApi.getAllStudentByTutorIdAndPeriod(this.props.userId, this.state.period).then((res) => {
+        TutorApi.getAllStudentByTutorIdAndPeriod(this.props.location.state.userId, this.state.period).then((res) => {
             if (res.selectState === 1) {
                 let tholdHead = <tr>
                     <td><Router><Switch>
-                        <Route path="/tutor/myStudent"><StudentMyTutorComp userId={this.props.userId}/></Route>
+                        <Route path="/tutor/myStudent"><StudentMyTutorComp
+                            userId={this.props.location.state.userId}/></Route>
                         <Route path="/tutor">
                             <Link to="/tutor/myStudent"><p className="link">你已经选满学生了，快来查看你的学生</p></Link>
                         </Route></Switch></Router></td>
@@ -123,7 +124,7 @@ export class Comp extends Component {
             let param = {
                 student: {"id": parseInt(item.props.itemID)},
                 selectState: 1,
-                finalTutor: {"id": parseInt(this.props.userId)}
+                finalTutor: {"id": parseInt(this.props.location.state.userId)}
             }
             SelectStateApi.getSelectStateByStuIdAndPeriod(
                 parseInt(item.props.itemID), this.state.period).then((res) => {
@@ -139,7 +140,7 @@ export class Comp extends Component {
     }
     // es6 使用箭头函数定义函数时可以省略 function 关键字
     getTableData = (page) => {
-        TutorApi.getEnableStudent(this.props.userId, this.state.period, page).then((res) => {
+        TutorApi.getEnableStudent(this.props.location.state.userId, this.state.period, page).then((res) => {
             const tbody = res.content.map((student) => {
                 if (student.major === null) student.major = {"name": ""}
                 if (student.area1 === null) student.area1 = {"name": ""}
@@ -163,7 +164,7 @@ export class Comp extends Component {
     }
 
     componentDidMount() {
-        TutorApi.getTutorById(this.props.userId).then((res) => {
+        TutorApi.getTutorById(this.props.location.state.userId).then((res) => {
             this.setState({numLimit: res.numLimit})
             this.getStaticData()
             this.getTableData(0)
@@ -194,4 +195,4 @@ export class Comp extends Component {
     }
 }
 
-export default Comp
+export default withRouter(Comp)

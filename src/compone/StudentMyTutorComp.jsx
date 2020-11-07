@@ -34,9 +34,9 @@ export class TutorMyStudentComp extends Component {
     }
 
     // 使用箭头函数定义函数时可以省略 function 关键字
-    getTableData = (page) => {
+    getTableData = () => {
         // api的async和await使得then能获得res
-        StudentApi.getStudentById(this.props.userId).then((res) => {
+        StudentApi.getStudentById(this.props.location.state.userId).then((res) => {
             let item = res.tutor
             const tbody = (
                 <tr key={item.id}>

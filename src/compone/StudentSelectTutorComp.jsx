@@ -5,8 +5,8 @@ import StudentApi from '../api/StudentApi'
 import SelectStateApi from "../api/SelectStateApi";
 import {toast, ToastContainer} from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import {BrowserRouter as Router, Link, Route, Switch} from 'react-router-dom'
 import StudentMyTutorComp from "./StudentMyTutorComp";
+import {BrowserRouter as Router, Link, Route, Switch, withRouter} from "react-router-dom";
 
 export class Comp extends Component {
     constructor(props) {
@@ -82,11 +82,12 @@ export class Comp extends Component {
     }
     // 初始化已选择的内容
     getStaticData = () => {
-        SelectStateApi.getSelectStateByStuIdAndPeriod(this.props.userId, this.state.period).then((res) => {
+        SelectStateApi.getSelectStateByStuIdAndPeriod(this.props.location.state.userId, this.state.period).then((res) => {
             if (res.selectState === 1) {
                 let tholdHead = <tr>
                     <td><Router><Switch>
-                        <Route path="/student/myTutor"><StudentMyTutorComp userId={this.props.userId}/></Route>
+                        <Route path="/student/myTutor"><StudentMyTutorComp
+                            userId={this.props.location.state.userId}/></Route>
                         <Route path="/student">
                             <Link to="/student/myTutor"><p className="link">你已经被导师选中了，快来查看你的导师</p></Link>
                         </Route></Switch></Router></td>
@@ -123,7 +124,7 @@ export class Comp extends Component {
             let param = {
                 student: {"id": parseInt(item.props.itemID)},
                 selectState: 1,
-                finalTutor: {"id": parseInt(this.props.userId)}
+                finalTutor: {"id": parseInt(this.props.location.state.userId)}
             }
             SelectStateApi.getSelectStateByStuIdAndPeriod(
                 parseInt(item.props.itemID), this.state.period).then((res) => {
@@ -192,4 +193,4 @@ export class Comp extends Component {
     }
 }
 
-export default Comp
+export default withRouter(Comp)
