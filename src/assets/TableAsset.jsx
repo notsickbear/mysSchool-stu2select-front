@@ -13,7 +13,7 @@ export class Table extends Component {
         }
 
         return (
-            <div className='table'>
+            <div class="col-md-6" className='table'>
                 <table>
                     <thead>
                     {this.props.thead.length <= 0 ? <tr>

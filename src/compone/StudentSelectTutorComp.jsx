@@ -86,7 +86,7 @@ export class Comp extends Component {
     // 初始化已选择的内容
     getStaticData = () => {
         SelectStateApi.getSelectStateByStuIdAndPeriod(this.props.location.state.userId, this.state.period).then((res) => {
-            console.log(this.props.location.state.userId)
+            console.log(res)
             if (res.selectState === 1) {
                 let tholdHead = <tr>
                     <td className="link" onClick={() => this.leapTo()}>你已经被导师选中了，快来查看你的导师</td>

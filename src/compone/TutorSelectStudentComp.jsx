@@ -1,11 +1,12 @@
-import React, {Component} from 'react'
-import StaticTableAsset from '../assets/StaticTableAsset'
-import TableAsset from '../assets/TableAsset'
+import React, { Component } from 'react'
 import TutorApi from '../api/TutorApi'
+import TutorPage from '../page/TutorPage'
 import SelectStateApi from "../api/SelectStateApi";
-import {toast, ToastContainer} from 'react-toastify';
+import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import {withRouter} from "react-router-dom";
+import { withRouter } from "react-router-dom";
+import { Table, Space, Button } from 'antd'
+import 'antd/dist/antd.css'
 
 export class Comp extends Component {
     constructor(props) {
@@ -14,58 +15,126 @@ export class Comp extends Component {
         let nowYear = date.getFullYear()
         this.state = {
             'period': nowYear,
-            "thead": [(
-                <tr key={0}>
-                    <th>id</th>
-                    <th>学号</th>
-                    <th>姓名</th>
-                    <th>专业</th>
-                    <th colSpan="3">志愿方向</th>
-                    <th>操作</th>
-                </tr>
-            )],
-            'tbody': [(
-                <tr key={-1}>
-                    <td/>
-                </tr>
-            )],
-            'totalPage': 1,
-            'thold': [(
-                <tr key={-1}>
-                    <td/>
-                </tr>
-            )],
-            'tholdHead': (
-                <tr>
-                    <th colSpan={8} className="link" onClick={() => this.saveStaticData()}>保存学生选择</th>
-                </tr>
-            ),
-            'numLimit': 2
+            "tholdhead": [
+                {
+                    title: 'id',
+                    dataIndex: 'id',
+                    key: 'id',
+                },
+                {
+                    title: '学号',
+                    dataIndex: 'no',
+                    key: 'no',
+                },
+                {
+                    title: '姓名',
+                    dataIndex: 'name',
+                    key: 'name',
+                },
+                {
+                    title: '专业',
+                    dataIndex: 'major',
+                    render: major => `${major.name}`,
+                    key: 'major',
+                },
+                {
+                    title: '志愿方向1',
+                    dataIndex: 'area1',
+                    render: area1 => `${area1.name}`,
+                    key: 'area1',
+                },
+                {
+                    title: '志愿方向2',
+                    dataIndex: 'area2',
+                    render: area2 => `${area2.name}`,
+                    key: 'area2',
+                },
+                {
+                    title: '志愿方向3',
+                    dataIndex: 'area3',
+                    render: area3 => `${area3.name}`,
+                    key: 'area3',
+                },
+                {
+                    title: 'Action',
+                    key: 'action',
+                    render: (text, record) => {
+                        if (record.selectState === 0) return (
+                            <Space size="middle">
+                                <Button type="primary" onClick={() => this.dropFromStatic(record.id)}>移除</Button>
+                            </Space>
+                        )
+                        else return (
+                            <Space size="middle">
+                                <b>已保存不可移除</b>
+                            </Space>
+                        )
+                    },
+                },
+            ],
+            "thead": [
+                {
+                    title: 'id',
+                    dataIndex: 'id',
+                    key: 'id',
+                },
+                {
+                    title: '学号',
+                    dataIndex: 'no',
+                    key: 'no',
+                },
+                {
+                    title: '姓名',
+                    dataIndex: 'name',
+                    key: 'name',
+                },
+                {
+                    title: '专业',
+                    dataIndex: 'major',
+                    render: major => `${major.name}`,
+                    key: 'major',
+                },
+                {
+                    title: '志愿方向1',
+                    dataIndex: 'area1',
+                    render: area1 => `${area1.name}`,
+                    key: 'area1',
+                },
+                {
+                    title: '志愿方向2',
+                    dataIndex: 'area2',
+                    render: area2 => `${area2.name}`,
+                    key: 'area2',
+                },
+                {
+                    title: '志愿方向3',
+                    dataIndex: 'area3',
+                    render: area3 => `${area3.name}`,
+                    key: 'area3',
+                },
+                {
+                    title: 'Action',
+                    key: 'action',
+                    render: (text, record) => (
+                        <Space size="middle">
+                            <Button type="primary" onClick={() => this.addToStatic(record)}>添加</Button>
+                        </Space>
+                    ),
+                },
+            ],
+            'tbody': [],
+            'thold': [],
+            'totalElements': 1,
+            'numLimit': 2,
+            loading: false,
         }
     }
 
     // 添加到已选择的内容（thold），点击保存以前数据仅保存在当前页面
     addToStatic = (item) => {
-        if (this.state.thold.findIndex(item => item.props.itemID === item.id) === -1) {
+        if (this.state.thold.findIndex(itemx => itemx.id === item.id) === -1) {
             if (this.state.thold.length < this.state.numLimit) {
-                if (item.major === null) item.major = {"name": ""}
-                if (item.area1 === null) item.area1 = {"name": ""}
-                if (item.area2 === null) item.area2 = {"name": ""}
-                if (item.area3 === null) item.area3 = {"name": ""}
-                this.setState({
-                    thold: [...this.state.thold, (
-                        <tr key={item.id} itemID={item.id}>
-                            <td>{item.id}</td>
-                            <td>{item.no}</td>
-                            <td>{item.name}</td>
-                            <td>{item.major.name}</td>
-                            <td>{item.area1.name}</td>
-                            <td>{item.area2.name}</td>
-                            <td>{item.area3.name}</td>
-                            <td className="link" onClick={() => this.dropFromStatic(item.id)}>移除</td>
-                        </tr>
-                    )]
-                })
+                this.setState({ thold: [...this.state.thold, item] })
             } else {
                 toast("学生已滿，如果需要增添新的学生，請移除一些舊的且没有保存的学生")
             }
@@ -73,113 +142,89 @@ export class Comp extends Component {
             toast("学生不能重复添加")
         }
     }
-    leapTo=()=>{
-        this.props.history.push({pathname: "/tutor/myStudent", state: {userId: this.props.location.state.userId},})
+
+    leapTo = () => {
+        this.props.history.push({ pathname: "/tutor/myStudent", state: { userId: this.props.location.state.userId }, })
     }
+
     // 从已选择的内容中移除，点击保存以前数据仅保存在当前页面
     dropFromStatic = (id) => {
         let data = this.state.thold
-        data.splice(data.findIndex(item => item.props.itemID === id), 1)
-        this.setState({thold: data})
+        data.splice(data.findIndex(itemx => itemx.id === id), 1)
+        this.setState({ thold: data })
     }
+
+    // 整理数据
+    formatData = (data) => {
+        data.map((item) => {
+            if (item.major === null) item.major = { name: "/" }
+            if (item.area1 === null) item.area1 = { name: "/" }
+            if (item.area2 === null) item.area2 = { name: "/" }
+            if (item.area3 === null) item.area3 = { name: "/" }
+            return 1
+        })
+    }
+
     // 初始化已选择的内容
     getStaticData = () => {
         TutorApi.getAllStudentByTutorIdAndPeriod(this.props.location.state.userId, this.state.period).then((res) => {
-            let thold = res.content.map((student) => {
-                if (student.major === null) student.major = {"name": ""}
-                if (student.area1 === null) student.area1 = {"name": ""}
-                if (student.area2 === null) student.area2 = {"name": ""}
-                if (student.area3 === null) student.area3 = {"name": ""}
-                return (
-                    <tr key={student.id} itemID={student.id}>
-                        <td>{student.id}</td>
-                        <td>{student.no}</td>
-                        <td>{student.name}</td>
-                        <td>{student.major.name}</td>
-                        <td>{student.area1.name}</td>
-                        <td>{student.area2.name}</td>
-                        <td>{student.area3.name}</td>
-                        <td>已保存，无法移除</td>
-                    </tr>
-                )
-            })
-            this.setState({thold: thold})
+            this.formatData(res.content)
+            this.setState({ thold: res.content })
         })
     }
+
     //  保存已选择的内容
     saveStaticData = () => {
         let data = this.state.thold
         // eslint-disable-next-line array-callback-return
         data.map((item) => {
-            let param = {
-                student: {"id": parseInt(item.props.itemID)},
-                selectState: 1,
-                finalTutor: {"id": parseInt(this.props.location.state.userId)}
+            if (item.selectState === 0) {
+                let param = {
+                    student: { id: item.id },
+                    selectState: 1,
+                    finalTutor: { "id": parseInt(this.props.location.state.userId) }
+                }
+                SelectStateApi.getSelectStateByStuIdAndPeriod(
+                    parseInt(item.id), this.state.period).then((res) => {
+                        param["id"] = res.id
+                        console.log(param)
+                        SelectStateApi.saveSelectState(param).then((ret) => {
+                            toast(ret)
+                            this.getStaticData()
+                            this.getTableData(0)
+                        })
+                    })
             }
-            SelectStateApi.getSelectStateByStuIdAndPeriod(
-                parseInt(item.props.itemID), this.state.period).then((res) => {
-                param["id"] = res.id
-                console.log(param)
-                SelectStateApi.saveSelectState(param).then((ret) => {
-                    toast(ret)
-                    this.getStaticData()
-                    this.getTableData(0)
-                })
-            })
         })
     }
-    // es6 使用箭头函数定义函数时可以省略 function 关键字
+    
+    // 獲取可選的學生數據
     getTableData = (page) => {
         TutorApi.getSmartSortStudent(this.props.location.state.userId, this.state.period, page).then((res) => {
-            const tbody = res.content.map((student, index) => {
-                if (student.major === null) student.major = {"name": ""}
-                if (student.area1 === null) student.area1 = {"name": ""}
-                if (student.area2 === null) student.area2 = {"name": ""}
-                if (student.area3 === null) student.area3 = {"name": ""}
-                return (
-                    <tr key={index} itemID={student.id}>
-                        <td>{student.id}</td>
-                        <td>{student.no}</td>
-                        <td>{student.name}</td>
-                        <td>{student.major.name}</td>
-                        <td>{student.area1.name}</td>
-                        <td>{student.area2.name}</td>
-                        <td>{student.area3.name}</td>
-                        <td className="link" onClick={() => this.addToStatic(student)}>添加</td>
-                    </tr>
-                )
-            });
-            this.setState({tbody: tbody, totalPage: res.totalPages})
+            console.log(res)
+            this.formatData(res.content)
+            this.setState({ tbody: res.content, totalElements: res.totalPages })
         })
     }
 
     componentDidMount() {
         TutorApi.getTutorById(this.props.location.state.userId).then((res) => {
-            this.setState({numLimit: res.numLimit})
+            console.log(res)
+            this.setState({ numLimit: res.numLimit })
             this.getStaticData()
             this.getTableData(0)
         })
     }
 
     render() {
+        const { thead, tbody, loading, tholdhead, thold, totalElements } = this.state
         return (
             <div>
-                <div>
-                    <StaticTableAsset
-                        thead={this.state.tholdHead}
-                        tbody={this.state.thold}
-                        numLimit={this.state.numLimit}
-                    />
-                </div>
-                <br/>
-                <div>
-                    <TableAsset
-                        thead={this.state.thead}
-                        tbody={this.state.tbody}
-                        totalPages={this.state.totalPage}
-                        getTableDate={this.getTableData}/>
-                </div>
-                <ToastContainer/>
+                <TutorPage userId={this.props.location.state.userId} />
+                <Button type="primary" onClick={() => this.saveStaticData()}>保存学生选择</Button>
+                <Table columns={tholdhead} dataSource={thold} loading={loading} pagination={totalElements} />
+                <Table columns={thead} dataSource={tbody} loading={loading} />
+                <ToastContainer />
             </div>
         )
     }

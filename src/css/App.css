@@ -11,33 +11,6 @@
     cursor: pointer;
 }
 
-table {
-    font-size: 20px;
-    text-align: center;
-    padding: 5px;
-    border: 1px solid black;
-    border-collapse: collapse;
-    transform: 0.2s linear;
-    background-color: silver;
-}
-
-.table {
-    text-align: center;
-    width: 80%;
-}
-
-tr {
-    background-color: ghostwhite;
-}
-
-td, th {
-    border: 1px solid black;
-}
-
-tr:hover {
-    background-color: aliceblue;
-}
-
 .page {
     display: inline;
     padding-left: 10px;

@@ -1,32 +1,37 @@
 import React, {Component} from 'react'
 import {Link, withRouter} from 'react-router-dom'
 import 'react-toastify/dist/ReactToastify.css';
+import {Button,} from 'antd'
+import 'antd/dist/antd.css'
 
 export class TutorPage extends Component {
     // TODO:select 的备选项查询 /*useId={this.props.useId}*/
     render() {
+        let userId = 0
+        if (this.props.userId !== null) userId = parseInt(this.props.userId)
+        else if (this.props.location.state.userId !== null) userId = parseInt(this.props.location.state.userId)
         return (
             <div>
                 <Link to={{
                     pathname: "/tutor/select",
-                    state: {userId: parseInt(this.props.location.state.userId)}
+                    state: {userId: userId}
                 }}>
-                    <div className="link">select</div>
+                    <Button type="primary">select</Button>
                 </Link>
                 <Link to={{
                     pathname: "/tutor/researchArea",
-                    state: {userId: this.props.location.state.userId}
+                    state: {userId: userId}
                 }}>
-                    <div className="link">researchArea</div>
+                    <Button type="primary">researchArea</Button>
                 </Link>
                 <Link to={{
                     pathname: "/tutor/myStudent",
-                    state: {userId: this.props.location.state.userId}
+                    state: {userId: userId}
                 }}>
-                    <div className="link">myStudent</div>
+                    <Button type="primary">myStudent</Button>
                 </Link>
                 <Link to="/login">
-                    <div className="link">注销</div>
+                <Button type="primary">注销</Button>
                 </Link>
             </div>
         )

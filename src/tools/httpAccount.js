@@ -1,7 +1,7 @@
 import axios from 'axios'
 
 const http = axios.create({
-    baseURL: 'http://localhost:9000/select-service',
+    baseURL: 'http://localhost:9000/account-service',
     timeout: 1000*100,
     withCredentials: true,
     headers: {
