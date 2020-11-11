@@ -1,38 +1,46 @@
-import React, {Component} from 'react'
-import {Link, withRouter} from 'react-router-dom'
+import React, { Component } from 'react'
+import { withRouter } from 'react-router-dom'
 import 'react-toastify/dist/ReactToastify.css';
-import {Button,} from 'antd'
+import { Button, PageHeader } from 'antd'
 import 'antd/dist/antd.css'
 
 export class TutorPage extends Component {
-    // TODO:select 的备选项查询 /*useId={this.props.useId}*/
+    leapTo = (path, userId = 0) => {
+        this.props.history.push({ pathname: path, state: { userId: userId }, })
+    }
     render() {
         let userId = 0
         if (this.props.userId !== null) userId = parseInt(this.props.userId)
         else if (this.props.location.state.userId !== null) userId = parseInt(this.props.location.state.userId)
         return (
             <div>
-                <Link to={{
-                    pathname: "/tutor/select",
-                    state: {userId: userId}
-                }}>
-                    <Button type="primary">select</Button>
-                </Link>
-                <Link to={{
-                    pathname: "/tutor/researchArea",
-                    state: {userId: userId}
-                }}>
-                    <Button type="primary">researchArea</Button>
-                </Link>
-                <Link to={{
-                    pathname: "/tutor/myStudent",
-                    state: {userId: userId}
-                }}>
-                    <Button type="primary">myStudent</Button>
-                </Link>
-                <Link to="/login">
-                <Button type="primary">注销</Button>
-                </Link>
+                <PageHeader
+                    ghost={false}
+                    onBack={() => window.history.back()}
+                    title="Title"
+                    extra={[
+                        <Button
+                            type="primary"
+                            key="1"
+                            onClick={() => this.leapTo("/tutor/select", userId)}>
+                            选择学生</Button>,
+                        <Button
+                            type="primary"
+                            key="2"
+                            onClick={() => this.leapTo("/tutor/researchArea", userId)}>
+                            研究方向</Button>,
+                        <Button
+                            type="primary"
+                            key="3"
+                            onClick={() => this.leapTo("/tutor/myStudent", userId)}>
+                            我的学生</Button>,
+                        <Button
+                            type="primary"
+                            key="4"
+                            onClick={() => this.leapTo("/login")}>
+                            退出</Button>,
+                    ]}
+                />
             </div>
         )
     }

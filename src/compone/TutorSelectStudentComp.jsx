@@ -13,55 +13,58 @@ export class Comp extends Component {
         super(props)
         let date = new Date()
         let nowYear = date.getFullYear()
+        let head = [
+            {
+                title: 'id',
+                dataIndex: 'id',
+                key: 'id',
+            },
+            {
+                title: '学号',
+                dataIndex: 'no',
+                key: 'no',
+            },
+            {
+                title: '姓名',
+                dataIndex: 'name',
+                key: 'name',
+            },
+            {
+                title: '专业',
+                dataIndex: 'major',
+                render: major => `${major.name}`,
+                key: 'major',
+            },
+            {
+                title: '志愿方向1',
+                dataIndex: 'area1',
+                render: area1 => `${area1.name}`,
+                key: 'area1',
+            },
+            {
+                title: '志愿方向2',
+                dataIndex: 'area2',
+                render: area2 => `${area2.name}`,
+                key: 'area2',
+            },
+            {
+                title: '志愿方向3',
+                dataIndex: 'area3',
+                render: area3 => `${area3.name}`,
+                key: 'area3',
+            },
+        ]
         this.state = {
             'period': nowYear,
             "tholdhead": [
-                {
-                    title: 'id',
-                    dataIndex: 'id',
-                    key: 'id',
-                },
-                {
-                    title: '学号',
-                    dataIndex: 'no',
-                    key: 'no',
-                },
-                {
-                    title: '姓名',
-                    dataIndex: 'name',
-                    key: 'name',
-                },
-                {
-                    title: '专业',
-                    dataIndex: 'major',
-                    render: major => `${major.name}`,
-                    key: 'major',
-                },
-                {
-                    title: '志愿方向1',
-                    dataIndex: 'area1',
-                    render: area1 => `${area1.name}`,
-                    key: 'area1',
-                },
-                {
-                    title: '志愿方向2',
-                    dataIndex: 'area2',
-                    render: area2 => `${area2.name}`,
-                    key: 'area2',
-                },
-                {
-                    title: '志愿方向3',
-                    dataIndex: 'area3',
-                    render: area3 => `${area3.name}`,
-                    key: 'area3',
-                },
+                ...head,
                 {
                     title: 'Action',
                     key: 'action',
                     render: (text, record) => {
                         if (record.selectState === 0) return (
                             <Space size="middle">
-                                <Button type="primary" onClick={() => this.dropFromStatic(record.id)}>移除</Button>
+                                <Button type="primary" onClick={() => this.dropFromStatic(parseInt(record.id))}>移除</Button>
                             </Space>
                         )
                         else return (
@@ -73,45 +76,7 @@ export class Comp extends Component {
                 },
             ],
             "thead": [
-                {
-                    title: 'id',
-                    dataIndex: 'id',
-                    key: 'id',
-                },
-                {
-                    title: '学号',
-                    dataIndex: 'no',
-                    key: 'no',
-                },
-                {
-                    title: '姓名',
-                    dataIndex: 'name',
-                    key: 'name',
-                },
-                {
-                    title: '专业',
-                    dataIndex: 'major',
-                    render: major => `${major.name}`,
-                    key: 'major',
-                },
-                {
-                    title: '志愿方向1',
-                    dataIndex: 'area1',
-                    render: area1 => `${area1.name}`,
-                    key: 'area1',
-                },
-                {
-                    title: '志愿方向2',
-                    dataIndex: 'area2',
-                    render: area2 => `${area2.name}`,
-                    key: 'area2',
-                },
-                {
-                    title: '志愿方向3',
-                    dataIndex: 'area3',
-                    render: area3 => `${area3.name}`,
-                    key: 'area3',
-                },
+                ...head,
                 {
                     title: 'Action',
                     key: 'action',
@@ -124,9 +89,10 @@ export class Comp extends Component {
             ],
             'tbody': [],
             'thold': [],
-            'totalElements': 1,
+            'tholdpag': {hideOnSinglePage:true},
+            'pagination': {total: 1, hideOnSinglePage:true},
             'numLimit': 2,
-            loading: false,
+            'loading': false,
         }
     }
 
@@ -141,10 +107,6 @@ export class Comp extends Component {
         } else {
             toast("学生不能重复添加")
         }
-    }
-
-    leapTo = () => {
-        this.props.history.push({ pathname: "/tutor/myStudent", state: { userId: this.props.location.state.userId }, })
     }
 
     // 从已选择的内容中移除，点击保存以前数据仅保存在当前页面
@@ -197,13 +159,12 @@ export class Comp extends Component {
             }
         })
     }
-    
+
     // 獲取可選的學生數據
     getTableData = (page) => {
         TutorApi.getSmartSortStudent(this.props.location.state.userId, this.state.period, page).then((res) => {
-            console.log(res)
             this.formatData(res.content)
-            this.setState({ tbody: res.content, totalElements: res.totalPages })
+            this.setState({ tbody: res.content, pagination:{total:res.totalElements} })
         })
     }
 
@@ -217,13 +178,15 @@ export class Comp extends Component {
     }
 
     render() {
-        const { thead, tbody, loading, tholdhead, thold, totalElements } = this.state
+        const { thead, tbody, loading, tholdhead, thold, tholdpag, pagination } = this.state
         return (
             <div>
                 <TutorPage userId={this.props.location.state.userId} />
+                <h1>预览已选项</h1>
                 <Button type="primary" onClick={() => this.saveStaticData()}>保存学生选择</Button>
-                <Table columns={tholdhead} dataSource={thold} loading={loading} pagination={totalElements} />
-                <Table columns={thead} dataSource={tbody} loading={loading} />
+                <Table columns={tholdhead} dataSource={thold} loading={loading} pagination={tholdpag} />
+                <h1>可选项</h1>
+                <Table columns={thead} dataSource={tbody} loading={loading} pagination={pagination} />
                 <ToastContainer />
             </div>
         )

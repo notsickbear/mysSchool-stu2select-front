@@ -29,11 +29,11 @@ export class Comp extends Component {
                     UserApi.getUserById(param.id).then((ret) => {
                         let type = parseInt(ret.type);
                         if (1 === type)
-                            this.props.history.push({ pathname: "/student", state: { userId: userId }, })
+                            this.props.history.push({ pathname: "/student/select", state: { userId: userId }, })
                         if (2 === type)
                             this.props.history.push({ pathname: "/tutor/select", state: { userId: userId }, })
                         if (3 === type || 4 === type)
-                            this.props.history.push({ pathname: "/admin", state: { userId: userId }, })
+                            this.props.history.push({ pathname: "/admin/assign", state: { userId: userId }, })
                     })
                 }
             })

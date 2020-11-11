@@ -1,58 +1,82 @@
-import React, {Component} from 'react'
-import StaticTableAsset from '../assets/StaticTableAsset'
-import TableAsset from '../assets/TableAsset'
+import React, { Component } from 'react'
+import TutorPage from '../page/TutorPage'
 import TutorApi from '../api/TutorApi'
 import ResearchAreaApi from '../api/ResearchAreaApi'
-import {toast, ToastContainer} from 'react-toastify';
+import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import {withRouter} from "react-router-dom";
-
+import { withRouter } from "react-router-dom";
+import { Table, Space, Button } from 'antd'
+import 'antd/dist/antd.css'
 export class ResearchAreaComp extends Component {
     constructor(props) {
         super(props)
         this.state = {
-            "thead": [(
-                <tr key={0}>
-                    <th>id</th>
-                    <th>编号</th>
-                    <th>名称</th>
-                    <th>操作</th>
-                </tr>
-            )],
-            'tbody': [(
-                <tr key={-1}>
-                    <td/>
-                </tr>
-            )],
-            'totalPage': 1,
-            'thold': [(
-                <tr key={-1}>
-                    <td/>
-                </tr>
-            )],
-            'tholdHead': (
-                <tr>
-                    <th colSpan={4} className="link" onClick={() => this.saveStaticData()}>保存研究志愿</th>
-                </tr>
-            ),
-            'numLimit': 3
+            "thead": [
+                {
+                    title: 'id',
+                    dataIndex: 'id',
+                    key: 'id',
+                },
+                {
+                    title: '编号',
+                    dataIndex: 'no',
+                    key: 'no',
+                },
+                {
+                    title: '名称',
+                    dataIndex: 'name',
+                    key: 'name',
+                },
+                {
+                    title: 'Action',
+                    key: 'action',
+                    render: (text, record) => (
+                        <Space size="middle">
+                            <Button type="primary" onClick={() => this.addToStatic(record)}>添加</Button>
+                        </Space>
+                    ),
+                },
+            ],
+            'tbody': [],
+            'thold': [],
+            'tholdhead': [
+                {
+                    title: 'id',
+                    dataIndex: 'id',
+                    key: 'id',
+                },
+                {
+                    title: '编号',
+                    dataIndex: 'no',
+                    key: 'no',
+                },
+                {
+                    title: '名称',
+                    dataIndex: 'name',
+                    key: 'name',
+                },
+                {
+                    title: 'Action',
+                    key: 'action',
+                    render: (text, record) => (
+                        <Space size="middle">
+                            <Button type="primary" onClick={() => this.dropFromStatic(parseInt(record.id))}>移除</Button>
+                        </Space>
+                    ),
+                },
+            ],
+            'tholdpag': {hideOnSinglePage:true},
+            'pagination': {total: 1, hideOnSinglePage:true},
+            'numLimit': 3,
+            'loading': false,
         }
     }
 
     // 添加到已选择的内容（thold），点击保存以前数据仅保存在当前页面
-    addToStatic = (id, no, name) => {
-        if (this.state.thold.findIndex(item => item.props.itemID === id) === -1) {
+    addToStatic = (item) => {
+        if (this.state.thold.findIndex(itemx => itemx.id === item.id) === -1) {
             if (this.state.thold.length < this.state.numLimit) {
-                this.setState({
-                    thold: [...this.state.thold, (
-                        <tr key={id} itemID={id}>
-                            <td>{id}</td>
-                            <td>{no}</td>
-                            <td>{name}</td>
-                            <td className="link" onClick={() => this.dropStatic(id)}>移除</td>
-                        </tr>
-                    )]
-                })
+                this.setState({ thold: [...this.state.thold, item] })
             } else {
                 toast("研究方向已滿，如果需要增添新的研究方向，請移除一些舊的研究方向")
             }
@@ -60,28 +84,21 @@ export class ResearchAreaComp extends Component {
             toast("研究方向不能重复添加")
         }
     }
-    // 从已选择的内容中移除，点击保存以前数据仅保存在当前页面
+
+    // 从已选择的内容中移除，点击保存以前数据仅保存在当前页面(移除以后不对自动更新页面)
     dropFromStatic = (id) => {
         let data = this.state.thold
-        data.splice(data.findIndex(item => item.props.itemID === id), 1)
-        this.setState({thold: data})
+        console.log(data)
+        data.splice(data.findIndex(item => item.id === id), 1)
+        this.setState({ thold: data })
+        console.log(this.state.thold)
     }
+
     // 初始化已选择的内容
     getStaticData = () => {
         TutorApi.getTutorById(this.props.location.state.userId).then((res) => {
-            let areas = [res.area1, res.area2, res.area3]
-            let thold = areas.map((area) => {
-                return (
-                    <tr key={area.id} itemID={area.id}>
-                        <td>{area.id}</td>
-                        <td>{area.no}</td>
-                        <td>{area.name}</td>
-                        <td className="link" onClick={() => this.dropFromStatic(area.id)}>移除</td>
-                    </tr>
-                )
-            })
-            this.setState({thold: thold})
-            console.log(this.state.thold)
+            let thold = [res.area1, res.area2, res.area3]
+            this.setState({ thold: thold })
         })
     }
     // todo 沒寫具體方法
@@ -89,12 +106,12 @@ export class ResearchAreaComp extends Component {
     saveStaticData = () => {
         let data = this.state.thold
         let ids = data.map((item) => {
-            return parseInt(item.props.itemID)
+            return parseInt(item.id)
         })
-        let param = {"id": parseInt(this.props.location.state.userId)}
-        if (ids.length > 0) param["area1"] = {"id": ids[0]}
-        if (ids.length > 1) param["area1"] = {"id": ids[1]}
-        if (ids.length > 2) param["area1"] = {"id": ids[2]}
+        let param = { "id": parseInt(this.props.location.state.userId) }
+        if (ids.length > 0) param["area1"] = { "id": ids[0] }
+        if (ids.length > 1) param["area1"] = { "id": ids[1] }
+        if (ids.length > 2) param["area1"] = { "id": ids[2] }
         TutorApi.saveTutor(param).then((res) => {
             toast(res)
         })
@@ -103,17 +120,7 @@ export class ResearchAreaComp extends Component {
     getTableData = (page) => {
         // api的async和await使得then能获得res
         ResearchAreaApi.getAllResearchArea(page).then((res) => {
-            let tbody = res.content.map((data) => {
-                return (
-                    <tr key={data.id} itemID={data.id}>
-                        <td>{data.id}</td>
-                        <td>{data.no}</td>
-                        <td>{data.name}</td>
-                        <td className="link" onClick={() => this.addToStatic(data.id, data.no, data.name)}>添加</td>
-                    </tr>
-                )
-            })
-            this.setState({tbody: tbody, totalPage: res.totalPages})
+            this.setState({ tbody: res.content, pagination:{total:res.totalElements} })
         })
     }
 
@@ -123,23 +130,15 @@ export class ResearchAreaComp extends Component {
     }
 
     render() {
+        const { thead, tbody, loading, tholdhead, thold, tholdpag, pagination } = this.state
         return (
             <div>
-                <div>
-                    <StaticTableAsset
-                        numLimit={this.state.numLimit}
-                        thead={this.state.tholdHead}
-                        tbody={this.state.thold}/>
-                </div>
-                <br/>
-                <div>
-                    <TableAsset
-                        thead={this.state.thead}
-                        tbody={this.state.tbody}
-                        totalPages={this.state.totalPage}
-                        getTableDate={this.getTableData}/>
-                </div>
-                <ToastContainer/>
+                <TutorPage userId={this.props.location.state.userId} />
+                <h1>预览已选项</h1>
+                <Table columns={tholdhead} dataSource={thold} loading={loading} pagination={tholdpag} />
+                <h1>可选项</h1>
+                <Table columns={thead} dataSource={tbody} loading={loading} pagination={pagination} />
+                <ToastContainer />
             </div>
         )
     }
