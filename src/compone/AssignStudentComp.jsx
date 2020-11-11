@@ -60,7 +60,7 @@ export class Comp extends Component {
             "thead": [...head],
             'head':[...head],
             'tbody': [],
-            'pagination': {total: 1, hideOnSinglePage:true},
+            'pagination': {total: 1, hideOnSinglePage:true, onChange: this.getTableData},
         }
     }
 

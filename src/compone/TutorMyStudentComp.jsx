@@ -60,8 +60,8 @@ export class TutorMyStudentComp extends Component {
                 },
             ],
             'tbody': [],
-            'tholdpag': {hideOnSinglePage:true},
-            'pagination': {total: 1, hideOnSinglePage:true},
+            'tholdpag': {hideOnSinglePage:true, onChange: this.getStaticData},
+            'pagination': {total: 1, hideOnSinglePage:true, onChange: this.getTableData},
             'loading': false,
         }
     }
